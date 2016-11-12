@@ -1,0 +1,65 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.Grid {
+  /*display: flex;
+  flex-wrap: wrap;*/
+  background: #776e65;
+  margin:-1%;
+  padding:20px;
+}
+
+.Tile {
+   /*flex: 0 0 25%;
+   display: flex;
+   align-self: center;*/
+   
+   background: #000;
+   float: left;
+   height: 24vw;
+   margin: 1%;
+   width: 23%;
+}
+
+.Tile-Inner {
+    text-align: center;
+    font-weight: bold;
+    font-size:3rem;
+    border-radius: 3px;
+    line-height: 3em;
+}
+
+.Value-2 {
+    background: #eee4da;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0);
+}
+.Value-4 {
+    background: #ede0c8;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0);
+}
+.Value-8 {
+    color: #f9f6f2;
+    background: #f2b179;
+}
