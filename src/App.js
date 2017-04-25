@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {initBoard, eachTile, moveUp, moveDown, moveLeft, moveRight} from './2048'
+import {initBoard, getRowIndexes, getColumnIndexes, getValue, moveUp, moveDown, moveLeft, moveRight} from './2048'
 import './App.css';
 
 const keyMove = {
@@ -34,11 +34,24 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="Grid">
-                {eachTile(this.state.board).map( ([x, y, value]) =>
-                    <div className="Tile" key={`${x}-${y}`}>
-                        <div className={"Tile-Inner " + (value ? 'Value-'+value : '')}>{value ? value : ''}</div>
-                    </div>
-                )}
+                    <table className="board">
+                        <tbody>
+                        {getRowIndexes().map( x => 
+                            <tr key={x}>
+                                {getColumnIndexes().map( y => { 
+                                    
+                                    const value = getValue(x,y,this.state.board)
+                                    
+                                    return ( 
+                                        <td className={"tile"+" tile-"+value} key={y}>
+                                            {value}
+                                        </td>
+                                    )
+                                })}
+                            </tr>
+                        )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         );

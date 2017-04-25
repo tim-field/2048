@@ -26,7 +26,7 @@ export function eachTile(board) {
 
     for(let x of getRowIndexes()) {
         for (let y of getColumnIndexes()) {
-            tiles.push([ x, y, empty(x,y,board) ? undefined : board[x][y] ])
+            tiles.push([ x, y, getValue(x,y,board)])
         }
     }
 
@@ -51,6 +51,10 @@ function renderTile(x,y,board) {
 
 export function empty(x,y,board) {
     return (typeof board[x] === 'undefined' || typeof board[x][y] === 'undefined')
+}
+
+export function getValue(x,y,board) {
+    return empty(x,y,board) ? null : board[x][y]
 }
 
 function addValue(x,y,value,board){
