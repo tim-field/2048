@@ -17,7 +17,7 @@ This is a web-based version of the 2048 game built with React. The game is playe
 
 ### Prerequisites
 
-- Node.js (version 6 or higher recommended)
+- Node.js (version 8 or higher recommended)
 - npm (comes with Node.js)
 
 ### Installation
@@ -84,6 +84,7 @@ npm test
 ```
 2048/
 ├── public/           # Static files
+│   ├── favicon.ico   # Favicon
 │   └── index.html    # HTML template
 ├── src/
 │   ├── 2048.js       # Core game logic
@@ -92,7 +93,8 @@ npm test
 │   ├── App.test.js   # Component tests
 │   ├── index.js      # Application entry point
 │   ├── index.css     # Global styles
-│   └── tests.js      # Additional test files
+│   ├── logo.svg      # React logo
+│   └── tests.js      # Additional test file
 ├── package.json      # Dependencies and scripts
 └── README.md         # This file
 ```
