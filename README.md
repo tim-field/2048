@@ -89,9 +89,10 @@ npm test
 │   ├── 2048.js       # Core game logic
 │   ├── App.js        # Main React component
 │   ├── App.css       # Component styles
+│   ├── App.test.js   # Component tests
 │   ├── index.js      # Application entry point
 │   ├── index.css     # Global styles
-│   └── tests.js      # Test files
+│   └── tests.js      # Additional test files
 ├── package.json      # Dependencies and scripts
 └── README.md         # This file
 ```
