@@ -74,9 +74,9 @@ npm test
 
 ## Technology Stack
 
-- **React** - UI framework
-- **react-scripts** - Build tooling and configuration
-- **Babel** - JavaScript transpiler
+- **React 15.3.2** - UI framework
+- **react-scripts 0.7.0** - Build tooling and configuration
+- **Babel** - JavaScript transpiler with ES2015 preset
 - **ES2015+** - Modern JavaScript features
 
 ## Project Structure
