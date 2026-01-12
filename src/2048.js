@@ -126,12 +126,12 @@ export function moveLeft(board) {
 
 export function moveUp(board) {
     const result = moveLeft(flip(board))
-    return result ? flip(result) : null
+    return result !== null ? flip(result) : null
 }
 
 export function moveDown(board) {
     const result = moveRight(flip(board))
-    return result ? flip(result) : null
+    return result !== null ? flip(result) : null
 }
 
 function eachRow(board, func) {
