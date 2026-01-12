@@ -1,14 +1,17 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
-    entry: './src/index.js',
-    output: {
-        path: path.resolve(__dirname, 'build'),
-        filename: 'bundle.js',
-        clean: true
-    },
-    module: {
+module.exports = (env, argv) => {
+    const isProduction = argv.mode === 'production';
+    
+    return {
+        entry: './src/index.js',
+        output: {
+            path: path.resolve(__dirname, 'build'),
+            filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
+            clean: true
+        },
+        module: {
         rules: [
             {
                 test: /\.(js|jsx)$/,
@@ -47,6 +50,6 @@ module.exports = {
     },
     resolve: {
         extensions: ['.js', '.jsx']
-    },
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
+    }
+    };
 };
