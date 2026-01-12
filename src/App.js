@@ -13,14 +13,10 @@ class App extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {board: []}
+        this.state = {board: initBoard()}
     }
 
-    componentWillMount() {
-        this.setState({
-            board: initBoard()
-        })
-
+    componentDidMount() {
         window.addEventListener('keydown', (e) => {
             if (e.key in keyMove) {
                 this.setState({
