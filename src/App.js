@@ -13,7 +13,7 @@ class App extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {board: []}
+        this.state = {board: [], gameOver: false}
     }
 
     componentWillMount() {
@@ -23,9 +23,16 @@ class App extends Component {
 
         window.addEventListener('keydown', (e) => {
             if (e.key in keyMove) {
-                this.setState({
-                    board: keyMove[e.key](this.state.board)
-                })
+                const newBoard = keyMove[e.key](this.state.board)
+                if (newBoard === null) {
+                    this.setState({
+                        gameOver: true
+                    })
+                } else {
+                    this.setState({
+                        board: newBoard
+                    })
+                }
             }
         })
     }
@@ -52,6 +59,11 @@ class App extends Component {
                         )}
                         </tbody>
                     </table>
+                    {this.state.gameOver && (
+                        <div className="game-over-overlay">
+                            <div className="game-over-text">Game Over</div>
+                        </div>
+                    )}
                 </div>
             </div>
         );
