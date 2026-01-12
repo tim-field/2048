@@ -14,27 +14,37 @@ class App extends Component {
     constructor(props) {
         super(props)
         this.state = {board: [], gameOver: false}
+        this.handleKeyDown = this.handleKeyDown.bind(this)
     }
 
-    componentWillMount() {
+    handleKeyDown(e) {
+        if (this.state.gameOver) {
+            return
+        }
+        if (e.key in keyMove) {
+            const newBoard = keyMove[e.key](this.state.board)
+            if (newBoard === null) {
+                this.setState({
+                    gameOver: true
+                })
+            } else {
+                this.setState({
+                    board: newBoard
+                })
+            }
+        }
+    }
+
+    componentDidMount() {
         this.setState({
             board: initBoard()
         })
 
-        window.addEventListener('keydown', (e) => {
-            if (e.key in keyMove) {
-                const newBoard = keyMove[e.key](this.state.board)
-                if (newBoard === null) {
-                    this.setState({
-                        gameOver: true
-                    })
-                } else {
-                    this.setState({
-                        board: newBoard
-                    })
-                }
-            }
-        })
+        window.addEventListener('keydown', this.handleKeyDown)
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.handleKeyDown)
     }
 
     render() {
