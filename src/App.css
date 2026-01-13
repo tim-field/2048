@@ -2,6 +2,14 @@ body {
   color: #776e65;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
 }
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
 .board {
   background: #bbada0;
 }
@@ -128,7 +136,7 @@ body {
 }
 
 .high-score-container {
-  margin-bottom: 20px;
+  margin-top: 20px;
   text-align: center;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
 }

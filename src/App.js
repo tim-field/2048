@@ -124,16 +124,6 @@ class App extends Component {
 
     return (
       <div className="App">
-        {highScore && (
-          <div className="high-score-container">
-            <div className="high-score-label">High Score:</div>
-            <div className="high-score-value">{highScore.highestTile}</div>
-            <div className="high-score-time">
-              Time: {Math.floor(highScore.timeInSeconds / 60)}:
-              {String(highScore.timeInSeconds % 60).padStart(2, "0")}
-            </div>
-          </div>
-        )}
         <div className="Grid">
           <table className="board">
             <tbody>
@@ -161,6 +151,16 @@ class App extends Component {
             </div>
           )}
         </div>
+        {highScore && (
+          <div className="high-score-container">
+            <div className="high-score-label">High Score:</div>
+            <div className="high-score-value">{highScore.highestTile}</div>
+            <div className="high-score-time">
+              Time: {Math.floor(highScore.timeInSeconds / 60)}:
+              {String(highScore.timeInSeconds % 60).padStart(2, "0")}
+            </div>
+          </div>
+        )}
       </div>
     )
   }
