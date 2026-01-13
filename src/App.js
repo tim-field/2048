@@ -52,6 +52,15 @@ class App extends Component {
       highScore: loadHighScore(),
     }
     this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.restartGame = this.restartGame.bind(this)
+  }
+
+  restartGame() {
+    this.setState({
+      board: initBoard(),
+      gameOver: false,
+      startTime: Date.now(),
+    })
   }
 
   handleKeyDown(e) {
@@ -146,6 +155,9 @@ class App extends Component {
           {this.state.gameOver && (
             <div className="game-over-overlay">
               <div className="game-over-text">Game Over</div>
+              <button className="restart-button" onClick={this.restartGame}>
+                Restart
+              </button>
             </div>
           )}
         </div>
