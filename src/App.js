@@ -13,7 +13,7 @@ class App extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {board: [], gameOver: false}
+        this.state = {board: initBoard(), gameOver: false}
         this.handleKeyDown = this.handleKeyDown.bind(this)
     }
 
@@ -36,10 +36,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        this.setState({
-            board: initBoard()
-        })
-
         window.addEventListener('keydown', this.handleKeyDown)
     }
 
