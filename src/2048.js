@@ -187,7 +187,5 @@ function addNewValue(board) {
 }
 
 export function getHighestTile(board) {
-  return eachTile(board).reduce((highest, [x, y, value]) => {
-    return value > highest ? value : highest
-  }, 0)
+  return Math.max(0, ...eachTile(board).map(([x, y, value]) => value || 0))
 }
