@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from "react"
 import {
   initBoard,
   getRowIndexes,
@@ -8,47 +8,47 @@ import {
   moveDown,
   moveLeft,
   moveRight,
-} from "./2048";
-import "./App.css";
+} from "./2048"
+import "./App.css"
 
 const keyMove = {
   ArrowUp: moveUp,
   ArrowDown: moveDown,
   ArrowLeft: moveLeft,
   ArrowRight: moveRight,
-};
+}
 
 class App extends Component {
   constructor(props) {
-    super(props);
-    this.state = { board: initBoard(), gameOver: false };
-    this.handleKeyDown = this.handleKeyDown.bind(this);
+    super(props)
+    this.state = { board: initBoard(), gameOver: false }
+    this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
   handleKeyDown(e) {
     if (this.state.gameOver) {
-      return;
+      return
     }
     if (e.key in keyMove) {
-      const newBoard = keyMove[e.key](this.state.board);
+      const newBoard = keyMove[e.key](this.state.board)
       if (newBoard === null) {
         this.setState({
           gameOver: true,
-        });
+        })
       } else {
         this.setState({
           board: newBoard,
-        });
+        })
       }
     }
   }
 
   componentDidMount() {
-    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("keydown", this.handleKeyDown)
   }
 
   componentWillUnmount() {
-    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("keydown", this.handleKeyDown)
   }
 
   render() {
@@ -60,13 +60,13 @@ class App extends Component {
               {getRowIndexes().map((x) => (
                 <tr key={x}>
                   {getColumnIndexes().map((y) => {
-                    const value = getValue(x, y, this.state.board);
+                    const value = getValue(x, y, this.state.board)
 
                     return (
                       <td className={"tile" + " tile-" + value} key={y}>
                         {value}
                       </td>
-                    );
+                    )
                   })}
                 </tr>
               ))}
@@ -79,8 +79,8 @@ class App extends Component {
           )}
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App
