@@ -120,10 +120,32 @@ class App extends Component {
   }
 
   render() {
-    const { highScore } = this.state
+    const { highScore, board, startTime } = this.state
+    const currentScore = getHighestTile(board)
+    const currentTimeInSeconds = Math.floor((Date.now() - startTime) / 1000)
 
     return (
       <div className="App">
+        <div className="scores-container">
+          <div className="score-box">
+            <div className="score-label">Score</div>
+            <div className="score-value">{currentScore}</div>
+            <div className="score-time">
+              Time: {Math.floor(currentTimeInSeconds / 60)}:
+              {String(currentTimeInSeconds % 60).padStart(2, "0")}
+            </div>
+          </div>
+          {highScore && (
+            <div className="score-box">
+              <div className="score-label">Best</div>
+              <div className="score-value">{highScore.highestTile}</div>
+              <div className="score-time">
+                Time: {Math.floor(highScore.timeInSeconds / 60)}:
+                {String(highScore.timeInSeconds % 60).padStart(2, "0")}
+              </div>
+            </div>
+          )}
+        </div>
         <div className="Grid">
           <table className="board">
             <tbody>
@@ -151,16 +173,6 @@ class App extends Component {
             </div>
           )}
         </div>
-        {highScore && (
-          <div className="high-score-container">
-            <div className="high-score-label">High Score:</div>
-            <div className="high-score-value">{highScore.highestTile}</div>
-            <div className="high-score-time">
-              Time: {Math.floor(highScore.timeInSeconds / 60)}:
-              {String(highScore.timeInSeconds % 60).padStart(2, "0")}
-            </div>
-          </div>
-        )}
       </div>
     )
   }
