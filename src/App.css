@@ -136,31 +136,39 @@ body {
   text-align: center;
 }
 
-.high-score-container {
-  margin-bottom: 40px;
-  position: fixed;
-  bottom: 0;
-  text-align: center;
+.scores-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
-.high-score-label {
-  font-size: 16px;
+.score-box {
+  background: #bbada0;
+  padding: 15px 25px;
+  border-radius: 3px;
+  text-align: center;
+  min-width: 120px;
+}
+
+.score-label {
+  font-size: 13px;
   font-weight: bold;
-  color: #776e65;
+  color: #eee4da;
+  text-transform: uppercase;
   margin-bottom: 5px;
 }
 
-.high-score-value {
-  font-size: 36px;
+.score-value {
+  font-size: 25px;
   font-weight: bold;
-  color: #776e65;
+  color: white;
   margin-bottom: 3px;
 }
 
-.high-score-time {
-  font-size: 14px;
-  color: #776e65;
+.score-time {
+  font-size: 12px;
+  color: #eee4da;
 }
 
 .restart-button {
