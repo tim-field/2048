@@ -5,6 +5,6 @@ import {
   moveLeft,
   moveRight,
   eachTile,
-} from "./2048";
+} from "./2048"
 
-render(moveUp(render(moveLeft(render(moveRight(render(initBoard())))))));
+render(moveUp(render(moveLeft(render(moveRight(render(initBoard())))))))
