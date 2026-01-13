@@ -4,3 +4,6 @@
 
 # MDT-10: Format code with Prettier
 3167b9bcb48ae49e526b162958cf50594567acd8
+
+# MDT-10: Update Prettier config to remove semicolons and reformat
+3eb74ea2242366d112a4294389b5bca865d2edc8
