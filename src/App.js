@@ -47,7 +47,7 @@ class App extends Component {
     super(props)
     this.state = {
       board: initBoard(),
-      gameOver: false,
+      gameOver: true,
       startTime: Date.now(),
       highScore: loadHighScore(),
     }
