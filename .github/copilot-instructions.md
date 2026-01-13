@@ -93,7 +93,7 @@ Key functions in `2048.js`:
 ## Important Notes
 
 - Arrow key events are captured at window level
-- Game over occurs when no valid moves remain (returns null)
+- Game over occurs when the board is full (no empty tiles remain). Move functions return `null` when they cannot add a new tile, which triggers game over in the UI
 - New tiles are added randomly (90% chance of 2, 10% chance of 4)
 - Always check for game over state before processing moves
 
