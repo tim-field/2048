@@ -89,3 +89,28 @@ body {
     box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556), inset 0 0 0 1px rgba(255, 255, 255, 0.33333);
     font-size: 35px;
 }
+
+.Grid {
+    position: relative;
+    display: inline-block;
+}
+
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(238, 228, 218, 0.73);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+
+.game-over-text {
+    font-size: 60px;
+    font-weight: bold;
+    color: #776e65;
+    text-align: center;
+}

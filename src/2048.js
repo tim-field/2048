@@ -81,41 +81,57 @@ function addToRow(x, value, row) {
 }
 
 export function moveRight(board) {
-    return eachRow(
-        addNewValue(
-            eachRow(
+    try {
+        return eachRow(
+            addNewValue(
                 eachRow(
-                    board,
-                    shiftRight
-                ),
-                sumRight
-            )
-        ),
-        shiftRight
-    )
+                    eachRow(
+                        board,
+                        shiftRight
+                    ),
+                    sumRight
+                )
+            ),
+            shiftRight
+        )
+    } catch (e) {
+        if (e.message === 'board full') {
+            return null
+        }
+        throw e
+    }
 }
 
 export function moveLeft(board) {
-    return eachRow(
-        addNewValue(
-            eachRow(
+    try {
+        return eachRow(
+            addNewValue(
                 eachRow(
-                    board,
-                    shiftLeft
-                ),
-                sumLeft
-            )
-        ),
-        shiftLeft
-    )
+                    eachRow(
+                        board,
+                        shiftLeft
+                    ),
+                    sumLeft
+                )
+            ),
+            shiftLeft
+        )
+    } catch (e) {
+        if (e.message === 'board full') {
+            return null
+        }
+        throw e
+    }
 }
 
 export function moveUp(board) {
-    return flip(moveLeft(flip(board)))
+    const result = moveLeft(flip(board))
+    return result !== null ? flip(result) : null
 }
 
 export function moveDown(board) {
-    return flip(moveRight(flip(board)))
+    const result = moveRight(flip(board))
+    return result !== null ? flip(result) : null
 }
 
 function eachRow(board, func) {

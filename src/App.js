@@ -1,57 +1,86 @@
-import React, { Component } from 'react';
-import {initBoard, getRowIndexes, getColumnIndexes, getValue, moveUp, moveDown, moveLeft, moveRight} from './2048'
-import './App.css';
+import React, { Component } from "react";
+import {
+  initBoard,
+  getRowIndexes,
+  getColumnIndexes,
+  getValue,
+  moveUp,
+  moveDown,
+  moveLeft,
+  moveRight,
+} from "./2048";
+import "./App.css";
 
 const keyMove = {
-    ArrowUp: moveUp,
-    ArrowDown: moveDown,
-    ArrowLeft: moveLeft,
-    ArrowRight: moveRight
-}
+  ArrowUp: moveUp,
+  ArrowDown: moveDown,
+  ArrowLeft: moveLeft,
+  ArrowRight: moveRight,
+};
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { board: initBoard(), gameOver: false };
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
 
-    constructor(props) {
-        super(props)
-        this.state = {board: initBoard()}
+  handleKeyDown(e) {
+    if (this.state.gameOver) {
+      return;
     }
-
-    componentDidMount() {
-        window.addEventListener('keydown', (e) => {
-            if (e.key in keyMove) {
-                this.setState({
-                    board: keyMove[e.key](this.state.board)
-                })
-            }
-        })
+    if (e.key in keyMove) {
+      const newBoard = keyMove[e.key](this.state.board);
+      if (newBoard === null) {
+        this.setState({
+          gameOver: true,
+        });
+      } else {
+        this.setState({
+          board: newBoard,
+        });
+      }
     }
+  }
 
-    render() {
-        return (
-            <div className="App">
-                <div className="Grid">
-                    <table className="board">
-                        <tbody>
-                        {getRowIndexes().map( x => 
-                            <tr key={x}>
-                                {getColumnIndexes().map( y => { 
-                                    
-                                    const value = getValue(x,y,this.state.board)
-                                    
-                                    return ( 
-                                        <td className={"tile"+" tile-"+value} key={y}>
-                                            {value}
-                                        </td>
-                                    )
-                                })}
-                            </tr>
-                        )}
-                        </tbody>
-                    </table>
-                </div>
+  componentDidMount() {
+    window.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.handleKeyDown);
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div className="Grid">
+          <table className="board">
+            <tbody>
+              {getRowIndexes().map((x) => (
+                <tr key={x}>
+                  {getColumnIndexes().map((y) => {
+                    const value = getValue(x, y, this.state.board);
+
+                    return (
+                      <td className={"tile" + " tile-" + value} key={y}>
+                        {value}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {this.state.gameOver && (
+            <div className="game-over-overlay">
+              <div className="game-over-text">Game Over</div>
             </div>
-        );
-    }
+          )}
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
