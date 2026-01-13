@@ -8,6 +8,7 @@ import {
   moveDown,
   moveLeft,
   moveRight,
+  getHighestTile,
 } from "./2048"
 import "./App.css"
 
@@ -18,10 +19,38 @@ const keyMove = {
   ArrowRight: moveRight,
 }
 
+// High score utilities
+const HIGH_SCORE_KEY = "twenty48_high_score"
+
+function loadHighScore() {
+  try {
+    const stored = localStorage.getItem(HIGH_SCORE_KEY)
+    return stored ? JSON.parse(stored) : null
+  } catch (e) {
+    return null
+  }
+}
+
+function saveHighScore(highestTile, timeInSeconds) {
+  try {
+    localStorage.setItem(
+      HIGH_SCORE_KEY,
+      JSON.stringify({ highestTile, timeInSeconds }),
+    )
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = { board: initBoard(), gameOver: false }
+    this.state = {
+      board: initBoard(),
+      gameOver: false,
+      startTime: Date.now(),
+      highScore: loadHighScore(),
+    }
     this.handleKeyDown = this.handleKeyDown.bind(this)
   }
 
@@ -32,13 +61,43 @@ class App extends Component {
     if (e.key in keyMove) {
       const newBoard = keyMove[e.key](this.state.board)
       if (newBoard === null) {
-        this.setState({
-          gameOver: true,
-        })
+        // Game over - check and save high score
+        const highestTile = getHighestTile(this.state.board)
+        const timeInSeconds = Math.floor(
+          (Date.now() - this.state.startTime) / 1000,
+        )
+        const currentHighScore = this.state.highScore
+
+        if (!currentHighScore || highestTile > currentHighScore.highestTile) {
+          saveHighScore(highestTile, timeInSeconds)
+          this.setState({
+            gameOver: true,
+            highScore: { highestTile, timeInSeconds },
+          })
+        } else {
+          this.setState({
+            gameOver: true,
+          })
+        }
       } else {
-        this.setState({
-          board: newBoard,
-        })
+        // Check if we've achieved a new high during play
+        const highestTile = getHighestTile(newBoard)
+        const currentHighScore = this.state.highScore
+
+        if (!currentHighScore || highestTile > currentHighScore.highestTile) {
+          const timeInSeconds = Math.floor(
+            (Date.now() - this.state.startTime) / 1000,
+          )
+          saveHighScore(highestTile, timeInSeconds)
+          this.setState({
+            board: newBoard,
+            highScore: { highestTile, timeInSeconds },
+          })
+        } else {
+          this.setState({
+            board: newBoard,
+          })
+        }
       }
     }
   }
@@ -52,8 +111,20 @@ class App extends Component {
   }
 
   render() {
+    const { highScore } = this.state
+
     return (
       <div className="App">
+        {highScore && (
+          <div className="high-score-container">
+            <div className="high-score-label">High Score:</div>
+            <div className="high-score-value">{highScore.highestTile}</div>
+            <div className="high-score-time">
+              Time: {Math.floor(highScore.timeInSeconds / 60)}:
+              {String(highScore.timeInSeconds % 60).padStart(2, "0")}
+            </div>
+          </div>
+        )}
         <div className="Grid">
           <table className="board">
             <tbody>
