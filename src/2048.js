@@ -185,3 +185,9 @@ function addNewValue(board) {
   const [x, y] = empties[~~(random * empties.length)]
   return addValue(x, y, random >= 0.9 ? 4 : 2, board)
 }
+
+export function getHighestTile(board) {
+  return eachTile(board).reduce((highest, [x, y, value]) => {
+    return value > highest ? value : highest
+  }, 0)
+}

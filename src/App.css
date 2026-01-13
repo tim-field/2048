@@ -125,3 +125,28 @@ body {
   color: #776e65;
   text-align: center;
 }
+
+.high-score-container {
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.high-score-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #776e65;
+  margin-bottom: 5px;
+}
+
+.high-score-value {
+  font-size: 36px;
+  font-weight: bold;
+  color: #776e65;
+  margin-bottom: 3px;
+}
+
+.high-score-time {
+  font-size: 14px;
+  color: #776e65;
+}
