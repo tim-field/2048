@@ -69,7 +69,7 @@ function App() {
   const [gameOver, setGameOver] = useState(false)
   const [startTime, setStartTime] = useState(() => Date.now())
   const [highScore, setHighScore] = useState(() => loadHighScore())
-  const tileIdMapRef = useRef(new Map())
+  const nextTileIdRef = useRef(0)
 
   const restartGame = useCallback(() => {
     const newBoard = initBoard()
@@ -77,7 +77,7 @@ function App() {
     setTiles(boardToTiles(newBoard))
     setGameOver(false)
     setStartTime(Date.now())
-    tileIdMapRef.current.clear()
+    nextTileIdRef.current = 0
   }, [])
 
   const handleKeyDown = useCallback(
@@ -114,9 +114,14 @@ function App() {
               const value = getValue(x, y, newBoard)
               if (value) {
                 // Try to find a matching tile from the previous state
-                const oldTile = tiles.find(
-                  (t) => t.value === value && !usedIds.has(t.id),
-                )
+                // Prioritize tiles that are close to the current position
+                const oldTile = tiles.find((t) => {
+                  if (usedIds.has(t.id)) return false
+                  if (t.value !== value) return false
+                  // Prefer tiles that haven't moved too far
+                  const distance = Math.abs(t.x - x) + Math.abs(t.y - y)
+                  return distance <= 3 // Max distance in a 4x4 grid
+                })
 
                 if (oldTile) {
                   newTiles.push({
@@ -129,7 +134,7 @@ function App() {
                 } else {
                   // New tile created
                   newTiles.push({
-                    id: `new-${x}-${y}-${value}-${Date.now()}-${Math.random()}`,
+                    id: `tile-${nextTileIdRef.current++}`,
                     x,
                     y,
                     value,
