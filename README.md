@@ -24,7 +24,7 @@ The game displays a 4x4 grid of tiles. Use arrow keys to move all tiles in the c
 
 ### Prerequisites
 
-- Node.js (version 14 or higher recommended)
+- Node.js (version 18 or higher recommended)
 - npm (comes with Node.js)
 
 ### Setup
@@ -115,7 +115,7 @@ The build artifacts will be stored in the `build/` directory.
   ├── index.html        # HTML template
   └── favicon.ico       # Favicon
 
-/webpack.config.js      # Webpack configuration
+webpack.config.js       # Webpack configuration (root level)
 ```
 
 ### Code Style
