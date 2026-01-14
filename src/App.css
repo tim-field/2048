@@ -10,10 +10,46 @@ body {
   justify-content: center;
   min-height: 100vh;
 }
+
+.board-container {
+  position: relative;
+  width: 488px;
+  height: 488px;
+  background: #bbada0;
+  border: 15px solid #bbada0;
+  border-radius: 3px;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 15px;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+}
+
+.grid-cell {
+  background: rgba(238, 228, 218, 0.35);
+  border-radius: 3px;
+}
+
+.tile-container {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 458px;
+  height: 458px;
+}
+
 .board {
   background: #bbada0;
 }
 .tile {
+  position: absolute;
   width: 107px;
   height: 107px;
   line-height: 107px;
@@ -21,19 +57,8 @@ body {
   font-weight: bold;
   text-align: center;
   background: rgba(238, 228, 218, 0.35);
-  -webkit-transition: 100ms ease-in-out;
-  -moz-transition: 100ms ease-in-out;
-  transition: 100ms ease-in-out;
-  -webkit-transition-property: -webkit-transform;
-  -moz-transition-property: -moz-transform;
-  transition-property: transform;
-}
-
-.board,
-.tile {
-  border: 15px solid #bbada0;
-  border-collapse: collapse;
   border-radius: 3px;
+  transition: transform 150ms ease-in-out;
 }
 
 .tile-2 {

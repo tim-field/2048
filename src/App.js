@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import {
   initBoard,
   getRowIndexes,
@@ -41,16 +41,43 @@ function saveHighScore(highestTile, timeInSeconds) {
   }
 }
 
+// Helper function to create tile objects with IDs for animation tracking
+function boardToTiles(board) {
+  const tiles = []
+  let nextId = 0
+
+  for (let x of getRowIndexes()) {
+    for (let y of getColumnIndexes()) {
+      const value = getValue(x, y, board)
+      if (value) {
+        tiles.push({
+          id: `${x}-${y}-${value}-${nextId++}`,
+          x,
+          y,
+          value,
+        })
+      }
+    }
+  }
+
+  return tiles
+}
+
 function App() {
   const [board, setBoard] = useState(() => initBoard())
+  const [tiles, setTiles] = useState(() => boardToTiles(initBoard()))
   const [gameOver, setGameOver] = useState(false)
   const [startTime, setStartTime] = useState(() => Date.now())
   const [highScore, setHighScore] = useState(() => loadHighScore())
+  const tileIdMapRef = useRef(new Map())
 
   const restartGame = useCallback(() => {
-    setBoard(initBoard())
+    const newBoard = initBoard()
+    setBoard(newBoard)
+    setTiles(boardToTiles(newBoard))
     setGameOver(false)
     setStartTime(Date.now())
+    tileIdMapRef.current.clear()
   }, [])
 
   const handleKeyDown = useCallback(
@@ -77,11 +104,47 @@ function App() {
             saveHighScore(highestTile, timeInSeconds)
             setHighScore({ highestTile, timeInSeconds })
           }
+
+          // Track tile movements by maintaining IDs
+          const newTiles = []
+          const usedIds = new Set()
+
+          for (let x of getRowIndexes()) {
+            for (let y of getColumnIndexes()) {
+              const value = getValue(x, y, newBoard)
+              if (value) {
+                // Try to find a matching tile from the previous state
+                const oldTile = tiles.find(
+                  (t) => t.value === value && !usedIds.has(t.id),
+                )
+
+                if (oldTile) {
+                  newTiles.push({
+                    id: oldTile.id,
+                    x,
+                    y,
+                    value,
+                  })
+                  usedIds.add(oldTile.id)
+                } else {
+                  // New tile created
+                  newTiles.push({
+                    id: `new-${x}-${y}-${value}-${Date.now()}-${Math.random()}`,
+                    x,
+                    y,
+                    value,
+                  })
+                }
+              }
+            }
+          }
+
           setBoard(newBoard)
+          setTiles(newTiles)
         }
       }
     },
-    [board, gameOver, highScore, startTime],
+    [board, gameOver, highScore, startTime, tiles],
   )
 
   useEffect(() => {
@@ -117,23 +180,28 @@ function App() {
         )}
       </div>
       <div className="Grid">
-        <table className="board">
-          <tbody>
-            {getRowIndexes().map((x) => (
-              <tr key={x}>
-                {getColumnIndexes().map((y) => {
-                  const value = getValue(x, y, board)
-
-                  return (
-                    <td className={"tile" + " tile-" + value} key={y}>
-                      {value}
-                    </td>
-                  )
-                })}
-              </tr>
+        <div className="board-container">
+          <div className="board-grid">
+            {getRowIndexes().map((x) =>
+              getColumnIndexes().map((y) => (
+                <div key={`${x}-${y}`} className="grid-cell" />
+              )),
+            )}
+          </div>
+          <div className="tile-container">
+            {tiles.map((tile) => (
+              <div
+                key={tile.id}
+                className={`tile tile-${tile.value} tile-position-${tile.x}-${tile.y}`}
+                style={{
+                  transform: `translate(${tile.y * 122}px, ${tile.x * 122}px)`,
+                }}
+              >
+                {tile.value}
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
         {gameOver && (
           <div className="game-over-overlay">
             <div className="game-over-text">Game Over</div>
