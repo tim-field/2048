@@ -105,8 +105,10 @@ The build artifacts will be stored in the `build/` directory.
   ├── index.js          # Application entry point
   ├── App.js            # Main React component with game UI and state management
   ├── App.css           # Styles for the game board and UI
+  ├── App.test.js       # React component tests
   ├── 2048.js           # Core game logic (pure functions)
-  ├── tests.js          # Simple integration test
+  ├── tests.js          # Game logic tests
+  ├── logo.svg          # Logo asset
   └── index.css         # Global styles
 
 /public
