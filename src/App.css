@@ -27,11 +27,50 @@
   --color-button: #8f7a66;
   --color-button-hover: #9f8a76;
   --color-button-active: #7f6a56;
+
+  /* Background color */
+  --color-background: #faf8ef;
+}
+
+[data-theme="dark"] {
+  /* Text colors */
+  --color-text-dark: #e0d6c8;
+  --color-text-light: #f9f6f2;
+  --color-text-white: white;
+  --color-text-muted: #a89f94;
+
+  /* Board and UI backgrounds */
+  --color-board: #3d3a33;
+  --color-tile-empty: rgba(60, 56, 48, 0.5);
+  --color-overlay: rgba(30, 28, 24, 0.85);
+
+  /* Tile backgrounds - slightly muted for dark mode */
+  --color-tile-2: #4a4640;
+  --color-tile-4: #5a554d;
+  --color-tile-8: #c4915f;
+  --color-tile-16: #c77a4f;
+  --color-tile-32: #c9634c;
+  --color-tile-64: #c94a2f;
+  --color-tile-128: #c4a85a;
+  --color-tile-256: #c4a54a;
+  --color-tile-512: #c4a23a;
+  --color-tile-1024: #c49f2a;
+  --color-tile-2048: #c49c1a;
+
+  /* Button colors */
+  --color-button: #5a524a;
+  --color-button-hover: #6a625a;
+  --color-button-active: #4a423a;
+
+  /* Background color */
+  --color-background: #1a1816;
 }
 
 body {
   color: var(--color-text-dark);
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  background: var(--color-background);
+  transition: background 0.3s ease;
 }
 
 .App {
@@ -216,5 +255,29 @@ body {
 }
 
 .restart-button:active {
+  background: var(--color-button-active);
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--color-text-light);
+  background: var(--color-button);
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  transition: background 0.2s ease-in-out;
+}
+
+.theme-toggle:hover {
+  background: var(--color-button-hover);
+}
+
+.theme-toggle:active {
   background: var(--color-button-active);
 }
