@@ -218,3 +218,78 @@ body {
 .restart-button:active {
   background: var(--color-button-active);
 }
+
+.help-container {
+  position: relative;
+  margin-top: 20px;
+}
+
+.help-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-button);
+  color: var(--color-text-light);
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  transition: background 0.2s ease-in-out;
+}
+
+.help-button:hover {
+  background: var(--color-button-hover);
+}
+
+.help-button:active {
+  background: var(--color-button-active);
+}
+
+.help-popup {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-board);
+  padding: 20px;
+  border-radius: 6px;
+  min-width: 280px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.help-title {
+  margin: 0 0 15px 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--color-text-white);
+  text-align: center;
+}
+
+.help-text {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.help-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.help-key {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-tile-2);
+  color: var(--color-text-dark);
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: bold;
+}
