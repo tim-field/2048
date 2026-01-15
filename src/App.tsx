@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback } from "react"
+import type { Board } from "./2048.ts"
 import {
   initBoard,
   getRowIndexes,
@@ -9,10 +10,12 @@ import {
   moveLeft,
   moveRight,
   getHighestTile,
-} from "./2048"
+} from "./2048.ts"
 import "./App.css"
 
-const keyMove = {
+type MoveFunction = (board: Board) => Board | null
+
+const keyMove: Record<string, MoveFunction> = {
   ArrowUp: moveUp,
   ArrowDown: moveDown,
   ArrowLeft: moveLeft,
@@ -21,31 +24,38 @@ const keyMove = {
 
 const HIGH_SCORE_KEY = "twenty48_high_score"
 
-function loadHighScore() {
+interface HighScore {
+  highestTile: number
+  timeInSeconds: number
+}
+
+function loadHighScore(): HighScore | null {
   try {
     const stored = localStorage.getItem(HIGH_SCORE_KEY)
-    return stored ? JSON.parse(stored) : null
-  } catch (e) {
+    return stored ? (JSON.parse(stored) as HighScore) : null
+  } catch {
     return null
   }
 }
 
-function saveHighScore(highestTile, timeInSeconds) {
+function saveHighScore(highestTile: number, timeInSeconds: number): void {
   try {
     localStorage.setItem(
       HIGH_SCORE_KEY,
       JSON.stringify({ highestTile, timeInSeconds }),
     )
-  } catch (e) {
+  } catch {
     // Ignore localStorage errors
   }
 }
 
-function App() {
-  const [board, setBoard] = useState(() => initBoard())
-  const [gameOver, setGameOver] = useState(false)
-  const [startTime, setStartTime] = useState(() => Date.now())
-  const [highScore, setHighScore] = useState(() => loadHighScore())
+function App(): React.JSX.Element {
+  const [board, setBoard] = useState<Board>(() => initBoard())
+  const [gameOver, setGameOver] = useState<boolean>(false)
+  const [startTime, setStartTime] = useState<number>(() => Date.now())
+  const [highScore, setHighScore] = useState<HighScore | null>(() =>
+    loadHighScore(),
+  )
 
   const restartGame = useCallback(() => {
     setBoard(initBoard())
@@ -54,12 +64,16 @@ function App() {
   }, [])
 
   const handleKeyDown = useCallback(
-    (e) => {
+    (e: KeyboardEvent) => {
       if (gameOver) {
         return
       }
       if (e.key in keyMove) {
-        const newBoard = keyMove[e.key](board)
+        const moveFunction = keyMove[e.key]
+        if (!moveFunction) {
+          return
+        }
+        const newBoard = moveFunction(board)
         if (newBoard === null) {
           const highestTile = getHighestTile(board)
           const timeInSeconds = Math.floor((Date.now() - startTime) / 1000)
@@ -125,7 +139,7 @@ function App() {
                   const value = getValue(x, y, board)
 
                   return (
-                    <td className={"tile" + " tile-" + value} key={y}>
+                    <td className={"tile" + " tile-" + String(value)} key={y}>
                       {value}
                     </td>
                   )

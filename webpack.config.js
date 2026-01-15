@@ -5,7 +5,7 @@ module.exports = (env, argv) => {
   const isProduction = argv.mode === "production"
 
   return {
-    entry: "./src/index.js",
+    entry: "./src/index.tsx",
     output: {
       path: path.resolve(__dirname, "build"),
       filename: isProduction ? "bundle.[contenthash].js" : "bundle.js",
@@ -14,12 +14,12 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.(js|jsx)$/,
+          test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader",
+            loader: "ts-loader",
             options: {
-              presets: ["@babel/preset-env", "@babel/preset-react"],
+              transpileOnly: true,
             },
           },
         },
@@ -49,7 +49,7 @@ module.exports = (env, argv) => {
       open: true,
     },
     resolve: {
-      extensions: [".js", ".jsx"],
+      extensions: [".ts", ".tsx", ".js", ".jsx"],
     },
   }
 }
