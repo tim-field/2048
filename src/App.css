@@ -21,12 +21,7 @@ body {
   font-weight: bold;
   text-align: center;
   background: rgba(238, 228, 218, 0.35);
-  -webkit-transition: 100ms ease-in-out;
-  -moz-transition: 100ms ease-in-out;
-  transition: 100ms ease-in-out;
-  -webkit-transition-property: -webkit-transform;
-  -moz-transition-property: -moz-transform;
-  transition-property: transform;
+  transition: transform 150ms ease-in-out;
 }
 
 .board,

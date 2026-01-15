@@ -170,12 +170,9 @@ function flip(board: Board): Board {
 }
 
 function getEmptyTiles(board: Board): EmptyTile[] {
-  return eachTile(board).reduce<EmptyTile[]>((empties, [x, y, value]) => {
-    if (!value) {
-      empties.push([x, y])
-    }
-    return empties
-  }, [])
+  return eachTile(board)
+    .filter(([, , value]) => !value)
+    .map(([x, y]) => [x, y] as EmptyTile)
 }
 
 function addNewValue(board: Board): Board {
