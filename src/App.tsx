@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import type { Board } from "./2048.ts"
 import {
   initBoard,
@@ -56,6 +56,8 @@ function App(): React.JSX.Element {
   const [highScore, setHighScore] = useState<HighScore | null>(() =>
     loadHighScore(),
   )
+  const [showHelp, setShowHelp] = useState<boolean>(false)
+  const helpRef = useRef<HTMLDivElement>(null)
 
   const restartGame = useCallback(() => {
     setBoard(initBoard())
@@ -104,6 +106,22 @@ function App(): React.JSX.Element {
       window.removeEventListener("keydown", handleKeyDown)
     }
   }, [handleKeyDown])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (helpRef.current && !helpRef.current.contains(event.target as Node)) {
+        setShowHelp(false)
+      }
+    }
+
+    if (showHelp) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [showHelp])
 
   const currentScore = getHighestTile(board)
   const currentTimeInSeconds = Math.floor((Date.now() - startTime) / 1000)
@@ -154,6 +172,33 @@ function App(): React.JSX.Element {
             <button className="restart-button" onClick={restartGame}>
               Restart
             </button>
+          </div>
+        )}
+      </div>
+      <div className="help-container" ref={helpRef}>
+        <button
+          className="help-button"
+          onClick={() => setShowHelp(!showHelp)}
+          aria-label="Help"
+        >
+          ?
+        </button>
+        {showHelp && (
+          <div className="help-popup">
+            <h3 className="help-title">How to Play</h3>
+            <p className="help-text">
+              Use the <strong>arrow keys</strong> to move the tiles. When two
+              tiles with the same number touch, they merge into one.
+            </p>
+            <p className="help-text">
+              <strong>Goal:</strong> Reach the 2048 tile to win!
+            </p>
+            <div className="help-controls">
+              <span className="help-key">↑</span>
+              <span className="help-key">↓</span>
+              <span className="help-key">←</span>
+              <span className="help-key">→</span>
+            </div>
           </div>
         )}
       </div>
