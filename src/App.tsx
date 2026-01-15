@@ -52,6 +52,8 @@ function saveHighScore(highestTile: number, timeInSeconds: number): void {
 function App(): React.JSX.Element {
   const [board, setBoard] = useState<Board>(() => initBoard())
   const [gameOver, setGameOver] = useState<boolean>(false)
+  const [hasWon, setHasWon] = useState<boolean>(false)
+  const [showWinScreen, setShowWinScreen] = useState<boolean>(false)
   const [startTime, setStartTime] = useState<number>(() => Date.now())
   const [highScore, setHighScore] = useState<HighScore | null>(() =>
     loadHighScore(),
@@ -60,7 +62,13 @@ function App(): React.JSX.Element {
   const restartGame = useCallback(() => {
     setBoard(initBoard())
     setGameOver(false)
+    setHasWon(false)
+    setShowWinScreen(false)
     setStartTime(Date.now())
+  }, [])
+
+  const continuePlaying = useCallback(() => {
+    setShowWinScreen(false)
   }, [])
 
   const handleKeyDown = useCallback(
@@ -91,11 +99,18 @@ function App(): React.JSX.Element {
             saveHighScore(highestTile, timeInSeconds)
             setHighScore({ highestTile, timeInSeconds })
           }
+
+          // Check if player reached 2048 for the first time
+          if (!hasWon && highestTile >= 2048) {
+            setHasWon(true)
+            setShowWinScreen(true)
+          }
+
           setBoard(newBoard)
         }
       }
     },
-    [board, gameOver, highScore, startTime],
+    [board, gameOver, highScore, startTime, hasWon],
   )
 
   useEffect(() => {
@@ -153,6 +168,19 @@ function App(): React.JSX.Element {
             <div className="game-over-text">Game Over</div>
             <button className="restart-button" onClick={restartGame}>
               Restart
+            </button>
+          </div>
+        )}
+        {showWinScreen && (
+          <div className="win-overlay">
+            <div className="confetti-container">
+              {[...Array(50)].map((_, i) => (
+                <div key={i} className="confetti"></div>
+              ))}
+            </div>
+            <div className="win-text">You Won!</div>
+            <button className="continue-button" onClick={continuePlaying}>
+              Continue Playing
             </button>
           </div>
         )}
