@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
+import confetti from "canvas-confetti"
 import type { Board } from "./2048.ts"
 import {
   initBoard,
@@ -12,6 +13,8 @@ import {
   getHighestTile,
 } from "./2048.ts"
 import "./App.css"
+
+const WINNING_TILE = 2048
 
 type MoveFunction = (board: Board) => Board | null
 
@@ -49,6 +52,32 @@ function saveHighScore(highestTile: number, timeInSeconds: number): void {
   }
 }
 
+function triggerConfetti(): void {
+  const duration = 3000
+  const end = Date.now() + duration
+
+  const frame = (): void => {
+    confetti({
+      particleCount: 3,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+    })
+    confetti({
+      particleCount: 3,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
+    })
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame)
+    }
+  }
+
+  frame()
+}
+
 function App(): React.JSX.Element {
   const [board, setBoard] = useState<Board>(() => initBoard())
   const [gameOver, setGameOver] = useState<boolean>(false)
@@ -56,11 +85,13 @@ function App(): React.JSX.Element {
   const [highScore, setHighScore] = useState<HighScore | null>(() =>
     loadHighScore(),
   )
+  const hasWonRef = useRef<boolean>(false)
 
   const restartGame = useCallback(() => {
     setBoard(initBoard())
     setGameOver(false)
     setStartTime(Date.now())
+    hasWonRef.current = false
   }, [])
 
   const handleKeyDown = useCallback(
@@ -91,6 +122,12 @@ function App(): React.JSX.Element {
             saveHighScore(highestTile, timeInSeconds)
             setHighScore({ highestTile, timeInSeconds })
           }
+
+          if (highestTile >= WINNING_TILE && !hasWonRef.current) {
+            hasWonRef.current = true
+            triggerConfetti()
+          }
+
           setBoard(newBoard)
         }
       }
