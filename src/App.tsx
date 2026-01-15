@@ -23,6 +23,7 @@ const keyMove: Record<string, MoveFunction> = {
 }
 
 const HIGH_SCORE_KEY = "twenty48_high_score"
+const THEME_KEY = "twenty48_theme"
 
 interface HighScore {
   highestTile: number
@@ -49,6 +50,22 @@ function saveHighScore(highestTile: number, timeInSeconds: number): void {
   }
 }
 
+function loadTheme(): string {
+  try {
+    return localStorage.getItem(THEME_KEY) || "light"
+  } catch {
+    return "light"
+  }
+}
+
+function saveTheme(theme: string): void {
+  try {
+    localStorage.setItem(THEME_KEY, theme)
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 function App(): React.JSX.Element {
   const [board, setBoard] = useState<Board>(() => initBoard())
   const [gameOver, setGameOver] = useState<boolean>(false)
@@ -56,6 +73,17 @@ function App(): React.JSX.Element {
   const [highScore, setHighScore] = useState<HighScore | null>(() =>
     loadHighScore(),
   )
+  const [theme, setTheme] = useState<string>(() => loadTheme())
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme)
+  }, [theme])
+
+  const toggleTheme = useCallback(() => {
+    const newTheme = theme === "light" ? "dark" : "light"
+    setTheme(newTheme)
+    saveTheme(newTheme)
+  }, [theme])
 
   const restartGame = useCallback(() => {
     setBoard(initBoard())
@@ -110,6 +138,9 @@ function App(): React.JSX.Element {
 
   return (
     <div className="App">
+      <button className="theme-toggle" onClick={toggleTheme}>
+        {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+      </button>
       <div className="scores-container">
         <div className="score-box">
           <div className="score-label">Score</div>
