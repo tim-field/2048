@@ -9,6 +9,7 @@
   --color-board: #bbada0;
   --color-tile-empty: rgba(238, 228, 218, 0.35);
   --color-overlay: rgba(238, 228, 218, 0.73);
+  --color-background: #faf8ef;
 
   /* Tile backgrounds */
   --color-tile-2: #eee4da;
@@ -29,9 +30,43 @@
   --color-button-active: #7f6a56;
 }
 
+[data-theme="dark"] {
+  /* Text colors */
+  --color-text-dark: #ccc5bd;
+  --color-text-light: #1a1a1a;
+  --color-text-white: #e0e0e0;
+  --color-text-muted: #5a5a5a;
+
+  /* Board and UI backgrounds */
+  --color-board: #3a3a3a;
+  --color-tile-empty: rgba(58, 58, 58, 0.5);
+  --color-overlay: rgba(30, 30, 30, 0.85);
+  --color-background: #1a1a1a;
+
+  /* Tile backgrounds - darker versions */
+  --color-tile-2: #2d2d2d;
+  --color-tile-4: #3a3a3a;
+  --color-tile-8: #8b5a2b;
+  --color-tile-16: #a0522d;
+  --color-tile-32: #b8442a;
+  --color-tile-64: #c2351f;
+  --color-tile-128: #b89f3c;
+  --color-tile-256: #b89632;
+  --color-tile-512: #b88d28;
+  --color-tile-1024: #b8841e;
+  --color-tile-2048: #b87b14;
+
+  /* Button colors */
+  --color-button: #5a4a3a;
+  --color-button-hover: #6a5a4a;
+  --color-button-active: #4a3a2a;
+}
+
 body {
   color: var(--color-text-dark);
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--color-background);
+  transition: background-color 0.3s ease-in-out;
 }
 
 .App {
@@ -216,5 +251,29 @@ body {
 }
 
 .restart-button:active {
+  background: var(--color-button-active);
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-text-light);
+  background: var(--color-button);
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  transition: background 0.2s ease-in-out;
+}
+
+.theme-toggle:hover {
+  background: var(--color-button-hover);
+}
+
+.theme-toggle:active {
   background: var(--color-button-active);
 }
