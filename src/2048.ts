@@ -1,18 +1,38 @@
 const width = 4
 const height = 4
 
-export type TileValue = number | null | undefined
+let nextTileId = 1
+
+export function getNextTileId(): number {
+  return nextTileId++
+}
+
+export function resetTileIdCounter(): void {
+  nextTileId = 1
+}
+
+export interface TileData {
+  id: number
+  value: number
+}
+
+export type TileValue = TileData | null | undefined
 export type Row = TileValue[]
 export type Board = Row[]
 export type Tile = [number, number, TileValue]
 export type EmptyTile = [number, number]
 
+export function createTile(value: number): TileData {
+  return { id: getNextTileId(), value }
+}
+
 export function initBoard(): Board {
-  return addValue(1, 1, 2, [])
+  resetTileIdCounter()
+  return addValue(1, 1, createTile(2), [])
 }
 
 export function render(board: Board): Board {
-  eachTile(board).map(([x, y, value]) => {
+  eachTile(board).map(([x, y, tile]) => {
     if (y === 0) {
       if (x === 0) {
         process.stdout.write("\n========================\n")
@@ -20,7 +40,7 @@ export function render(board: Board): Board {
         process.stdout.write("\n")
       }
     }
-    process.stdout.write(value ? "[  " + String(value) + " ]" : "[    ]")
+    process.stdout.write(tile ? "[  " + String(tile.value) + " ]" : "[    ]")
   })
   return board
 }
@@ -68,7 +88,7 @@ function addValue(x: number, y: number, value: TileValue, board: Board): Board {
   return board
 }
 
-function addToRow(x: number, value: number, row: Row): Row {
+function addToRow(x: number, value: TileValue, row: Row): Row {
   if (!Array.isArray(row)) {
     row = []
   }
@@ -139,24 +159,26 @@ function addTo(row: Row, value: TileValue, left = true): Row {
 }
 
 function sumRight(row: Row): Row {
-  return row.reduceRight<Row>((right, value, x) => {
-    if (value && x > 0 && value === row[x - 1]) {
-      right[x] = (value as number) * 2
+  return row.reduceRight<Row>((right, tile, x) => {
+    const prevTile = row[x - 1]
+    if (tile && x > 0 && prevTile && tile.value === prevTile.value) {
+      right[x] = createTile(tile.value * 2)
       delete row[x - 1]
     } else {
-      right[x] = value
+      right[x] = tile
     }
     return right
   }, [])
 }
 
 function sumLeft(row: Row): Row {
-  return row.reduce<Row>((left, value, x) => {
-    if (value && x < width && value === row[x + 1]) {
-      left[x] = (value as number) * 2
+  return row.reduce<Row>((left, tile, x) => {
+    const nextTile = row[x + 1]
+    if (tile && x < width && nextTile && tile.value === nextTile.value) {
+      left[x] = createTile(tile.value * 2)
       delete row[x + 1]
     } else {
-      left[x] = value
+      left[x] = tile
     }
     return left
   }, [])
@@ -186,9 +208,9 @@ function addNewValue(board: Board): Board {
     throw new Error("board full")
   }
   const [x, y] = emptyTile
-  return addValue(x, y, random >= 0.9 ? 4 : 2, board)
+  return addValue(x, y, createTile(random >= 0.9 ? 4 : 2), board)
 }
 
 export function getHighestTile(board: Board): number {
-  return Math.max(0, ...eachTile(board).map(([, , value]) => value ?? 0))
+  return Math.max(0, ...eachTile(board).map(([, , tile]) => tile?.value ?? 0))
 }

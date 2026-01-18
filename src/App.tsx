@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import confetti from "canvas-confetti"
-import type { Board } from "./2048.ts"
+import type { Board, TileData } from "./2048.ts"
 import {
   initBoard,
   getRowIndexes,
@@ -173,10 +173,15 @@ function App(): React.JSX.Element {
             {getRowIndexes().map((x) => (
               <tr key={x}>
                 {getColumnIndexes().map((y) => {
-                  const value = getValue(x, y, board)
+                  const tile = getValue(x, y, board) as TileData | null
+                  const value = tile?.value ?? null
 
                   return (
-                    <td className={"tile" + " tile-" + String(value)} key={y}>
+                    <td
+                      className={"tile" + " tile-" + String(value)}
+                      key={tile?.id ?? `empty-${x}-${y}`}
+                      data-tile-id={tile?.id}
+                    >
                       {value}
                     </td>
                   )
