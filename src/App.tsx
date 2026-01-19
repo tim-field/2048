@@ -173,7 +173,8 @@ function App(): React.JSX.Element {
             {getRowIndexes().map((x) => (
               <tr key={x}>
                 {getColumnIndexes().map((y) => {
-                  const value = getValue(x, y, board)
+                  const tile = getValue(x, y, board)
+                  const value = tile?.value ?? null
 
                   return (
                     <td className={"tile" + " tile-" + String(value)} key={y}>
