@@ -78,6 +78,7 @@ function addValue(
 
     const row = board[x]
     if (row) {
+      // At this point, value is either a number or TileData (not null/undefined)
       const tileValue: TileData =
         typeof value === "number" ? { value, id: generateTileId() } : value
       board[x] = addToRow(y, tileValue, row)
