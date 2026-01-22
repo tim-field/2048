@@ -5,7 +5,7 @@ import {
   initBoard,
   getRowIndexes,
   getColumnIndexes,
-  getValue,
+  getTile,
   moveUp,
   moveDown,
   moveLeft,
@@ -173,7 +173,7 @@ function App(): React.JSX.Element {
             {getRowIndexes().map((x) => (
               <tr key={x}>
                 {getColumnIndexes().map((y) => {
-                  const tile = getValue(x, y, board) as TileData | null
+                  const tile = getTile(x, y, board) as TileData | null
                   const value = tile?.value ?? null
 
                   return (

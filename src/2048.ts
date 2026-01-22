@@ -50,7 +50,7 @@ export function eachTile(board: Board): Tile[] {
 
   for (const x of getRowIndexes()) {
     for (const y of getColumnIndexes()) {
-      tiles.push([x, y, getValue(x, y, board)])
+      tiles.push([x, y, getTile(x, y, board)])
     }
   }
 
@@ -69,7 +69,7 @@ export function empty(x: number, y: number, board: Board): boolean {
   return typeof board[x] === "undefined" || typeof board[x]?.[y] === "undefined"
 }
 
-export function getValue(x: number, y: number, board: Board): TileValue {
+export function getTile(x: number, y: number, board: Board): TileValue {
   return empty(x, y, board) ? null : board[x]?.[y]
 }
 
