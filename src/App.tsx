@@ -11,6 +11,7 @@ import {
   moveLeft,
   moveRight,
   getHighestTile,
+  eachTile,
 } from "./2048.ts"
 import "./App.css"
 
@@ -86,12 +87,25 @@ function App(): React.JSX.Element {
     loadHighScore(),
   )
   const hasWonRef = useRef<boolean>(false)
+  const [movingTiles, setMovingTiles] = useState<Set<number>>(new Set())
+  const [newTiles, setNewTiles] = useState<Set<number>>(new Set())
 
   const restartGame = useCallback(() => {
-    setBoard(initBoard())
+    const newBoard = initBoard()
+    setBoard(newBoard)
     setGameOver(false)
     setStartTime(Date.now())
     hasWonRef.current = false
+    setMovingTiles(new Set())
+
+    // Mark the initial tile as new
+    const tiles = eachTile(newBoard)
+    const initialTileIds = tiles
+      .filter(([, , tile]) => tile !== null)
+      .map(([, , tile]) => tile?.id)
+      .filter((id): id is number => id !== undefined)
+    setNewTiles(new Set(initialTileIds))
+    setTimeout(() => setNewTiles(new Set()), 200)
   }, [])
 
   const handleKeyDown = useCallback(
@@ -128,7 +142,41 @@ function App(): React.JSX.Element {
             triggerConfetti()
           }
 
+          // Track which tiles existed before the move
+          const oldTileIds = new Set(
+            eachTile(board)
+              .filter(([, , tile]) => tile !== null)
+              .map(([, , tile]) => tile?.id)
+              .filter((id): id is number => id !== undefined),
+          )
+
+          // Track which tiles exist after the move
+          const newTileIds = new Set(
+            eachTile(newBoard)
+              .filter(([, , tile]) => tile !== null)
+              .map(([, , tile]) => tile?.id)
+              .filter((id): id is number => id !== undefined),
+          )
+
+          // Tiles that existed before are moving
+          const moving = new Set(
+            [...newTileIds].filter((id) => oldTileIds.has(id)),
+          )
+
+          // Tiles that are new (didn't exist before)
+          const newlyCreated = new Set(
+            [...newTileIds].filter((id) => !oldTileIds.has(id)),
+          )
+
+          setMovingTiles(moving)
+          setNewTiles(newlyCreated)
           setBoard(newBoard)
+
+          // Clear animations after they complete
+          setTimeout(() => {
+            setMovingTiles(new Set())
+            setNewTiles(new Set())
+          }, 200)
         }
       }
     },
@@ -176,9 +224,19 @@ function App(): React.JSX.Element {
                   const tile = getTile(x, y, board) as TileData | null
                   const value = tile?.value ?? null
 
+                  const tileId = tile?.id
+                  const isMoving = tileId !== undefined && movingTiles.has(tileId)
+                  const isNew = tileId !== undefined && newTiles.has(tileId)
+
                   return (
                     <td
-                      className={"tile" + " tile-" + String(value)}
+                      className={
+                        "tile" +
+                        " tile-" +
+                        String(value) +
+                        (isMoving ? " tile-moving" : "") +
+                        (isNew ? " tile-new" : "")
+                      }
                       key={tile?.id ?? `empty-${x}-${y}`}
                       data-tile-id={tile?.id}
                     >
