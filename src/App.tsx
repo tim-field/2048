@@ -89,6 +89,9 @@ function App(): React.JSX.Element {
   const hasWonRef = useRef<boolean>(false)
   const [movingTiles, setMovingTiles] = useState<Set<number>>(new Set())
   const [newTiles, setNewTiles] = useState<Set<number>>(new Set())
+  const [tilePositions, setTilePositions] = useState<
+    Map<number, { x: number; y: number }>
+  >(new Map())
 
   const restartGame = useCallback(() => {
     const newBoard = initBoard()
@@ -97,6 +100,7 @@ function App(): React.JSX.Element {
     setStartTime(Date.now())
     hasWonRef.current = false
     setMovingTiles(new Set())
+    setTilePositions(new Map())
 
     // Mark the initial tile as new
     const tiles = eachTile(newBoard)
@@ -142,6 +146,14 @@ function App(): React.JSX.Element {
             triggerConfetti()
           }
 
+          // Store previous positions before the move
+          const previousPositions = new Map<number, { x: number; y: number }>()
+          eachTile(board).forEach(([x, y, tile]) => {
+            if (tile?.id !== undefined) {
+              previousPositions.set(tile.id, { x, y })
+            }
+          })
+
           // Track which tiles existed before the move
           const oldTileIds = new Set(
             eachTile(board)
@@ -168,6 +180,7 @@ function App(): React.JSX.Element {
             [...newTileIds].filter((id) => !oldTileIds.has(id)),
           )
 
+          setTilePositions(previousPositions)
           setMovingTiles(moving)
           setNewTiles(newlyCreated)
           setBoard(newBoard)
@@ -176,6 +189,7 @@ function App(): React.JSX.Element {
           setTimeout(() => {
             setMovingTiles(new Set())
             setNewTiles(new Set())
+            setTilePositions(new Map())
           }, 200)
         }
       }
@@ -228,6 +242,20 @@ function App(): React.JSX.Element {
                   const isMoving = tileId !== undefined && movingTiles.has(tileId)
                   const isNew = tileId !== undefined && newTiles.has(tileId)
 
+                  // Calculate position offset for animation
+                  let style: React.CSSProperties = {}
+                  if (isMoving && tileId !== undefined) {
+                    const prevPos = tilePositions.get(tileId)
+                    if (prevPos) {
+                      const deltaX = prevPos.y - y
+                      const deltaY = prevPos.x - x
+                      style = {
+                        "--tile-offset-x": `${deltaX * 122}px`,
+                        "--tile-offset-y": `${deltaY * 122}px`,
+                      } as React.CSSProperties
+                    }
+                  }
+
                   return (
                     <td
                       className={
@@ -239,6 +267,7 @@ function App(): React.JSX.Element {
                       }
                       key={tile?.id ?? `empty-${x}-${y}`}
                       data-tile-id={tile?.id}
+                      style={style}
                     >
                       {value}
                     </td>

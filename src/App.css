@@ -56,6 +56,8 @@ body {
 
 .tile-moving {
   animation: tile-move 150ms ease-in-out;
+  --tile-offset-x: 0px;
+  --tile-offset-y: 0px;
 }
 
 .tile-new {
@@ -64,13 +66,10 @@ body {
 
 @keyframes tile-move {
   0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
+    transform: translate(var(--tile-offset-x), var(--tile-offset-y));
   }
   100% {
-    transform: scale(1);
+    transform: translate(0, 0);
   }
 }
 
