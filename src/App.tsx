@@ -27,6 +27,9 @@ const keyMove: Record<string, MoveFunction> = {
 }
 
 const HIGH_SCORE_KEY = "twenty48_high_score"
+const THEME_KEY = "twenty48_theme"
+
+type Theme = "light" | "dark"
 
 interface HighScore {
   highestTile: number
@@ -40,6 +43,34 @@ function loadHighScore(): HighScore | null {
   } catch {
     return null
   }
+}
+
+function loadTheme(): Theme {
+  try {
+    const stored = localStorage.getItem(THEME_KEY)
+    if (stored === "dark" || stored === "light") {
+      return stored
+    }
+    // Check system preference
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark"
+    }
+    return "light"
+  } catch {
+    return "light"
+  }
+}
+
+function saveTheme(theme: Theme): void {
+  try {
+    localStorage.setItem(THEME_KEY, theme)
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
+function applyTheme(theme: Theme): void {
+  document.documentElement.setAttribute("data-theme", theme)
 }
 
 function saveHighScore(highestTile: number, timeInSeconds: number): void {
@@ -86,12 +117,24 @@ function App(): React.JSX.Element {
   const [highScore, setHighScore] = useState<HighScore | null>(() =>
     loadHighScore(),
   )
+  const [theme, setTheme] = useState<Theme>(() => {
+    const initialTheme = loadTheme()
+    applyTheme(initialTheme)
+    return initialTheme
+  })
   const hasWonRef = useRef<boolean>(false)
   const [movingTiles, setMovingTiles] = useState<Set<number>>(new Set())
   const [newTiles, setNewTiles] = useState<Set<number>>(new Set())
   const [tilePositions, setTilePositions] = useState<
     Map<number, { x: number; y: number }>
   >(new Map())
+
+  const toggleTheme = useCallback(() => {
+    const newTheme: Theme = theme === "light" ? "dark" : "light"
+    setTheme(newTheme)
+    saveTheme(newTheme)
+    applyTheme(newTheme)
+  }, [theme])
 
   const restartGame = useCallback(() => {
     const newBoard = initBoard()
@@ -209,6 +252,14 @@ function App(): React.JSX.Element {
 
   return (
     <div className="App">
+      <button
+        className="theme-toggle"
+        onClick={toggleTheme}
+        aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+        title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+      >
+        {theme === "light" ? "\u{1F319}" : "\u{2600}\u{FE0F}"}
+      </button>
       <div className="scores-container">
         <div className="score-box">
           <div className="score-label">Score</div>
