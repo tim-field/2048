@@ -9,6 +9,7 @@
   --color-board: #bbada0;
   --color-tile-empty: rgba(238, 228, 218, 0.35);
   --color-overlay: rgba(238, 228, 218, 0.73);
+  --color-background: #faf8ef;
 
   /* Tile backgrounds */
   --color-tile-2: #eee4da;
@@ -29,9 +30,44 @@
   --color-button-active: #7f6a56;
 }
 
+/* Dark theme */
+[data-theme="dark"] {
+  /* Text colors */
+  --color-text-dark: #e0d6cc;
+  --color-text-light: #f9f6f2;
+  --color-text-white: white;
+  --color-text-muted: #a09080;
+
+  /* Board and UI backgrounds */
+  --color-board: #3d3a33;
+  --color-tile-empty: rgba(60, 56, 48, 0.6);
+  --color-overlay: rgba(30, 28, 24, 0.85);
+  --color-background: #1a1816;
+
+  /* Tile backgrounds - slightly darkened/saturated versions */
+  --color-tile-2: #4a4540;
+  --color-tile-4: #5a5248;
+  --color-tile-8: #c48a55;
+  --color-tile-16: #c47048;
+  --color-tile-32: #c45a45;
+  --color-tile-64: #c44528;
+  --color-tile-128: #c4a852;
+  --color-tile-256: #c4a545;
+  --color-tile-512: #c4a038;
+  --color-tile-1024: #c49c2c;
+  --color-tile-2048: #c49820;
+
+  /* Button colors */
+  --color-button: #5a524a;
+  --color-button-hover: #6a625a;
+  --color-button-active: #4a423a;
+}
+
 body {
   color: var(--color-text-dark);
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--color-background);
+  transition: background-color 0.3s ease;
 }
 
 .App {
@@ -249,4 +285,43 @@ body {
 
 .restart-button:active {
   background: var(--color-button-active);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-board);
+  color: var(--color-text-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background: var(--color-button-hover);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+  background: var(--color-button-active);
+}
+
+.theme-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
