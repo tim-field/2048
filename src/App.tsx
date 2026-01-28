@@ -5,7 +5,6 @@ import {
   initBoard,
   getRowIndexes,
   getColumnIndexes,
-  getTile,
   moveUp,
   moveDown,
   moveLeft,
@@ -87,10 +86,9 @@ function App(): React.JSX.Element {
     loadHighScore(),
   )
   const hasWonRef = useRef<boolean>(false)
-  const [movingTiles, setMovingTiles] = useState<Set<number>>(new Set())
   const [newTiles, setNewTiles] = useState<Set<number>>(new Set())
-  const [tilePositions, setTilePositions] = useState<
-    Map<number, { x: number; y: number }>
+  const [tileTransforms, setTileTransforms] = useState<
+    Map<number, { deltaRow: number; deltaCol: number }>
   >(new Map())
 
   const restartGame = useCallback(() => {
@@ -99,8 +97,7 @@ function App(): React.JSX.Element {
     setGameOver(false)
     setStartTime(Date.now())
     hasWonRef.current = false
-    setMovingTiles(new Set())
-    setTilePositions(new Map())
+    setTileTransforms(new Map())
 
     // Mark the initial tile as new
     const tiles = eachTile(newBoard)
@@ -154,42 +151,55 @@ function App(): React.JSX.Element {
             }
           })
 
-          // Track which tiles existed before the move
+          // Calculate transforms for tiles that moved
+          const transforms = new Map<
+            number,
+            { deltaRow: number; deltaCol: number }
+          >()
+          eachTile(newBoard).forEach(([newX, newY, tile]) => {
+            if (tile?.id !== undefined) {
+              const prevPos = previousPositions.get(tile.id)
+              if (prevPos && (prevPos.x !== newX || prevPos.y !== newY)) {
+                transforms.set(tile.id, {
+                  deltaRow: prevPos.x - newX,
+                  deltaCol: prevPos.y - newY,
+                })
+              }
+            }
+          })
+
+          // Track which tiles are new (didn't exist before)
           const oldTileIds = new Set(
             eachTile(board)
               .filter(([, , tile]) => tile !== null)
               .map(([, , tile]) => tile?.id)
               .filter((id): id is number => id !== undefined),
           )
-
-          // Track which tiles exist after the move
-          const newTileIds = new Set(
+          const newlyCreated = new Set(
             eachTile(newBoard)
               .filter(([, , tile]) => tile !== null)
               .map(([, , tile]) => tile?.id)
-              .filter((id): id is number => id !== undefined),
+              .filter(
+                (id): id is number => id !== undefined && !oldTileIds.has(id),
+              ),
           )
 
-          // Tiles that existed before are moving
-          const moving = new Set(
-            [...newTileIds].filter((id) => oldTileIds.has(id)),
-          )
-
-          // Tiles that are new (didn't exist before)
-          const newlyCreated = new Set(
-            [...newTileIds].filter((id) => !oldTileIds.has(id)),
-          )
-
-          setTilePositions(previousPositions)
-          setMovingTiles(moving)
+          // Set transforms first (tiles appear at old positions)
+          setTileTransforms(transforms)
           setNewTiles(newlyCreated)
           setBoard(newBoard)
 
-          // Clear animations after they complete
+          // Use requestAnimationFrame to clear transforms on next frame
+          // This triggers the CSS transition animation
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setTileTransforms(new Map())
+            })
+          })
+
+          // Clear new tile animation after it completes
           setTimeout(() => {
-            setMovingTiles(new Set())
             setNewTiles(new Set())
-            setTilePositions(new Map())
           }, 200)
         }
       }
@@ -206,6 +216,34 @@ function App(): React.JSX.Element {
 
   const currentScore = getHighestTile(board)
   const currentTimeInSeconds = Math.floor((Date.now() - startTime) / 1000)
+
+  // Collect all tiles for rendering
+  const tiles: Array<{
+    x: number
+    y: number
+    tile: TileData
+    isNew: boolean
+    transform?: { deltaRow: number; deltaCol: number }
+  }> = []
+
+  eachTile(board).forEach(([x, y, tileData]) => {
+    if (tileData) {
+      const tileId = tileData.id
+      const isNew = newTiles.has(tileId)
+      const transform = tileTransforms.get(tileId)
+
+      const tileInfo: (typeof tiles)[number] = {
+        x,
+        y,
+        tile: tileData,
+        isNew,
+      }
+      if (transform) {
+        tileInfo.transform = transform
+      }
+      tiles.push(tileInfo)
+    }
+  })
 
   return (
     <div className="App">
@@ -230,53 +268,42 @@ function App(): React.JSX.Element {
         )}
       </div>
       <div className="Grid">
-        <table className="board">
-          <tbody>
-            {getRowIndexes().map((x) => (
-              <tr key={x}>
-                {getColumnIndexes().map((y) => {
-                  const tile = getTile(x, y, board) as TileData | null
-                  const value = tile?.value ?? null
+        <div className="board">
+          {/* Background grid cells */}
+          {getRowIndexes().map((x) =>
+            getColumnIndexes().map((y) => (
+              <div key={`cell-${x}-${y}`} className="cell" />
+            )),
+          )}
+          {/* Tiles layer */}
+          {tiles.map(({ x, y, tile, isNew, transform }) => {
+            // Cell size (107px) + gap (15px) = 122px per cell
+            const cellSize = 122
 
-                  const tileId = tile?.id
-                  const isMoving = tileId !== undefined && movingTiles.has(tileId)
-                  const isNew = tileId !== undefined && newTiles.has(tileId)
+            const style: React.CSSProperties = {
+              gridRow: x + 1,
+              gridColumn: y + 1,
+            }
 
-                  // Calculate position offset for animation
-                  let style: React.CSSProperties = {}
-                  if (isMoving && tileId !== undefined) {
-                    const prevPos = tilePositions.get(tileId)
-                    if (prevPos) {
-                      const deltaX = prevPos.y - y
-                      const deltaY = prevPos.x - x
-                      style = {
-                        "--tile-offset-x": `${deltaX * 122}px`,
-                        "--tile-offset-y": `${deltaY * 122}px`,
-                      } as React.CSSProperties
-                    }
-                  }
+            // Apply transform for movement animation
+            if (transform) {
+              style.transform = `translate(${transform.deltaCol * cellSize}px, ${transform.deltaRow * cellSize}px)`
+            }
 
-                  return (
-                    <td
-                      className={
-                        "tile" +
-                        " tile-" +
-                        String(value) +
-                        (isMoving ? " tile-moving" : "") +
-                        (isNew ? " tile-new" : "")
-                      }
-                      key={tile?.id ?? `empty-${x}-${y}`}
-                      data-tile-id={tile?.id}
-                      style={style}
-                    >
-                      {value}
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            return (
+              <div
+                key={tile.id}
+                className={
+                  "tile tile-" + String(tile.value) + (isNew ? " tile-new" : "")
+                }
+                style={style}
+                data-tile-id={tile.id}
+              >
+                {tile.value}
+              </div>
+            )
+          })}
+        </div>
         {gameOver && (
           <div className="game-over-overlay">
             <div className="game-over-text">Game Over</div>
