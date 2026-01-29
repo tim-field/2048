@@ -4,6 +4,7 @@
   --color-text-light: #f9f6f2;
   --color-text-white: white;
   --color-text-muted: #eee4da;
+  --color-page: #faf8ef;
 
   /* Board and UI backgrounds */
   --color-board: #bbada0;
@@ -27,11 +28,33 @@
   --color-button: #8f7a66;
   --color-button-hover: #9f8a76;
   --color-button-active: #7f6a56;
+  --color-toggle-border: rgba(187, 173, 160, 0.6);
+}
+
+[data-theme="dark"] {
+  --color-text-dark: #f2ede5;
+  --color-text-light: #f9f6f2;
+  --color-text-white: #ffffff;
+  --color-text-muted: #d8cfc3;
+  --color-page: #1f1a16;
+
+  --color-board: #2f2822;
+  --color-tile-empty: rgba(73, 63, 55, 0.65);
+  --color-overlay: rgba(32, 28, 24, 0.82);
+
+  --color-button: #6f5c4c;
+  --color-button-hover: #7f6b5a;
+  --color-button-active: #5f4e40;
+  --color-toggle-border: rgba(255, 255, 255, 0.2);
 }
 
 body {
   color: var(--color-text-dark);
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  background: var(--color-page);
+  transition:
+    background 0.2s ease-in-out,
+    color 0.2s ease-in-out;
 }
 
 .App {
@@ -199,6 +222,37 @@ body {
   gap: 20px;
   margin-bottom: 20px;
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px 24px;
+  margin-bottom: 10px;
+}
+
+.theme-toggle-button {
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--color-toggle-border);
+  background: transparent;
+  color: var(--color-text-dark);
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease-in-out,
+    color 0.2s ease-in-out,
+    background 0.2s ease-in-out;
+}
+
+.theme-toggle-button:hover {
+  background: rgba(187, 173, 160, 0.15);
+}
+
+.theme-toggle-button:active {
+  background: rgba(187, 173, 160, 0.25);
 }
 
 .score-box {
