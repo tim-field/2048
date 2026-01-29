@@ -27,6 +27,11 @@ const keyMove: Record<string, MoveFunction> = {
 }
 
 const HIGH_SCORE_KEY = "twenty48_high_score"
+const THEME_KEY = "twenty48_theme"
+const DARK_THEME = "dark"
+const LIGHT_THEME = "light"
+
+type Theme = typeof DARK_THEME | typeof LIGHT_THEME
 
 interface HighScore {
   highestTile: number
@@ -48,6 +53,39 @@ function saveHighScore(highestTile: number, timeInSeconds: number): void {
       HIGH_SCORE_KEY,
       JSON.stringify({ highestTile, timeInSeconds }),
     )
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
+function isTheme(value: string | null): value is Theme {
+  return value === DARK_THEME || value === LIGHT_THEME
+}
+
+function getSystemTheme(): Theme {
+  if (typeof window !== "undefined" && window.matchMedia) {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? DARK_THEME
+      : LIGHT_THEME
+  }
+  return LIGHT_THEME
+}
+
+function getInitialTheme(): { theme: Theme; useSystemTheme: boolean } {
+  try {
+    const stored = localStorage.getItem(THEME_KEY)
+    if (isTheme(stored)) {
+      return { theme: stored, useSystemTheme: false }
+    }
+  } catch {
+    // Ignore localStorage errors
+  }
+  return { theme: getSystemTheme(), useSystemTheme: true }
+}
+
+function saveThemePreference(theme: Theme): void {
+  try {
+    localStorage.setItem(THEME_KEY, theme)
   } catch {
     // Ignore localStorage errors
   }
@@ -80,6 +118,11 @@ function triggerConfetti(): void {
 }
 
 function App(): React.JSX.Element {
+  const initialTheme = getInitialTheme()
+  const [theme, setTheme] = useState<Theme>(initialTheme.theme)
+  const [useSystemTheme, setUseSystemTheme] = useState<boolean>(
+    initialTheme.useSystemTheme,
+  )
   const [board, setBoard] = useState<Board>(() => initBoard())
   const [gameOver, setGameOver] = useState<boolean>(false)
   const [startTime, setStartTime] = useState<number>(() => Date.now())
@@ -204,30 +247,66 @@ function App(): React.JSX.Element {
     }
   }, [handleKeyDown])
 
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    if (!useSystemTheme) {
+      saveThemePreference(theme)
+    }
+  }, [theme, useSystemTheme])
+
+  useEffect(() => {
+    if (!useSystemTheme || !window.matchMedia) {
+      return
+    }
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    const handleChange = (event: MediaQueryListEvent): void => {
+      setTheme(event.matches ? DARK_THEME : LIGHT_THEME)
+    }
+    mediaQuery.addEventListener("change", handleChange)
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange)
+    }
+  }, [useSystemTheme])
+
+  const toggleTheme = (): void => {
+    setUseSystemTheme(false)
+    setTheme((prev) => (prev === DARK_THEME ? LIGHT_THEME : DARK_THEME))
+  }
+
   const currentScore = getHighestTile(board)
   const currentTimeInSeconds = Math.floor((Date.now() - startTime) / 1000)
 
   return (
     <div className="App">
-      <div className="scores-container">
-        <div className="score-box">
-          <div className="score-label">Score</div>
-          <div className="score-value">{currentScore}</div>
-          <div className="score-time">
-            Time: {Math.floor(currentTimeInSeconds / 60)}:
-            {String(currentTimeInSeconds % 60).padStart(2, "0")}
-          </div>
-        </div>
-        {highScore && (
+      <div className="toolbar">
+        <div className="scores-container">
           <div className="score-box">
-            <div className="score-label">Best</div>
-            <div className="score-value">{highScore.highestTile}</div>
+            <div className="score-label">Score</div>
+            <div className="score-value">{currentScore}</div>
             <div className="score-time">
-              Time: {Math.floor(highScore.timeInSeconds / 60)}:
-              {String(highScore.timeInSeconds % 60).padStart(2, "0")}
+              Time: {Math.floor(currentTimeInSeconds / 60)}:
+              {String(currentTimeInSeconds % 60).padStart(2, "0")}
             </div>
           </div>
-        )}
+          {highScore && (
+            <div className="score-box">
+              <div className="score-label">Best</div>
+              <div className="score-value">{highScore.highestTile}</div>
+              <div className="score-time">
+                Time: {Math.floor(highScore.timeInSeconds / 60)}:
+                {String(highScore.timeInSeconds % 60).padStart(2, "0")}
+              </div>
+            </div>
+          )}
+        </div>
+        <button
+          className="theme-toggle-button"
+          onClick={toggleTheme}
+          type="button"
+          aria-pressed={theme === DARK_THEME}
+        >
+          {theme === DARK_THEME ? "Light mode" : "Dark mode"}
+        </button>
       </div>
       <div className="Grid">
         <table className="board">
