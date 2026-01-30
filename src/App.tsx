@@ -17,6 +17,28 @@ import "./App.css"
 
 const WINNING_TILE = 2048
 
+// Tile background colors matching CSS variables
+const TILE_COLORS: Record<number, string> = {
+  2: "#eee4da",
+  4: "#ede0c8",
+  8: "#f2b179",
+  16: "#f59563",
+  32: "#f67c5f",
+  64: "#f65e3b",
+  128: "#edcf72",
+  256: "#edcc61",
+  512: "#edc850",
+  1024: "#edc53f",
+  2048: "#edc22e",
+}
+
+// Default background color when no tiles or unknown tile value
+const DEFAULT_BACKGROUND = "#faf8ef"
+
+function getTileColor(value: number): string {
+  return TILE_COLORS[value] ?? DEFAULT_BACKGROUND
+}
+
 type MoveFunction = (board: Board) => Board | null
 
 const keyMove: Record<string, MoveFunction> = {
@@ -205,6 +227,12 @@ function App(): React.JSX.Element {
   }, [handleKeyDown])
 
   const currentScore = getHighestTile(board)
+
+  // Update page background color based on highest tile
+  useEffect(() => {
+    const backgroundColor = getTileColor(currentScore)
+    document.body.style.backgroundColor = backgroundColor
+  }, [currentScore])
   const currentTimeInSeconds = Math.floor((Date.now() - startTime) / 1000)
 
   return (
