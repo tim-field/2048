@@ -1,0 +1,9 @@
+# Aha! Integration Test - DT-2813
+
+This file was created to test the integration between Aha! and GitHub.
+
+Test Details:
+- Issue: #76
+- Aha Reference: DT-2813
+- Date: 2026-02-11
+- Status: Integration test successful
