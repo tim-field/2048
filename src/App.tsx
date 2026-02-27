@@ -87,11 +87,7 @@ function App(): React.JSX.Element {
     loadHighScore(),
   )
   const hasWonRef = useRef<boolean>(false)
-  const [movingTiles, setMovingTiles] = useState<Set<number>>(new Set())
   const [newTiles, setNewTiles] = useState<Set<number>>(new Set())
-  const [tilePositions, setTilePositions] = useState<
-    Map<number, { x: number; y: number }>
-  >(new Map())
 
   const restartGame = useCallback(() => {
     const newBoard = initBoard()
@@ -99,8 +95,6 @@ function App(): React.JSX.Element {
     setGameOver(false)
     setStartTime(Date.now())
     hasWonRef.current = false
-    setMovingTiles(new Set())
-    setTilePositions(new Map())
 
     // Mark the initial tile as new
     const tiles = eachTile(newBoard)
@@ -146,14 +140,6 @@ function App(): React.JSX.Element {
             triggerConfetti()
           }
 
-          // Store previous positions before the move
-          const previousPositions = new Map<number, { x: number; y: number }>()
-          eachTile(board).forEach(([x, y, tile]) => {
-            if (tile?.id !== undefined) {
-              previousPositions.set(tile.id, { x, y })
-            }
-          })
-
           // Track which tiles existed before the move
           const oldTileIds = new Set(
             eachTile(board)
@@ -170,26 +156,17 @@ function App(): React.JSX.Element {
               .filter((id): id is number => id !== undefined),
           )
 
-          // Tiles that existed before are moving
-          const moving = new Set(
-            [...newTileIds].filter((id) => oldTileIds.has(id)),
-          )
-
           // Tiles that are new (didn't exist before)
           const newlyCreated = new Set(
             [...newTileIds].filter((id) => !oldTileIds.has(id)),
           )
 
-          setTilePositions(previousPositions)
-          setMovingTiles(moving)
           setNewTiles(newlyCreated)
           setBoard(newBoard)
 
           // Clear animations after they complete
           setTimeout(() => {
-            setMovingTiles(new Set())
             setNewTiles(new Set())
-            setTilePositions(new Map())
           }, 200)
         }
       }
@@ -230,53 +207,34 @@ function App(): React.JSX.Element {
         )}
       </div>
       <div className="Grid">
-        <table className="board">
-          <tbody>
-            {getRowIndexes().map((x) => (
-              <tr key={x}>
-                {getColumnIndexes().map((y) => {
-                  const tile = getTile(x, y, board) as TileData | null
-                  const value = tile?.value ?? null
+        <div className="board">
+          {getRowIndexes().map((x) =>
+            getColumnIndexes().map((y) => {
+              const tile = getTile(x, y, board) as TileData | null
+              const value = tile?.value ?? null
 
-                  const tileId = tile?.id
-                  const isMoving = tileId !== undefined && movingTiles.has(tileId)
-                  const isNew = tileId !== undefined && newTiles.has(tileId)
+              const tileId = tile?.id
+              const isNew = tileId !== undefined && newTiles.has(tileId)
 
-                  // Calculate position offset for animation
-                  let style: React.CSSProperties = {}
-                  if (isMoving && tileId !== undefined) {
-                    const prevPos = tilePositions.get(tileId)
-                    if (prevPos) {
-                      const deltaX = prevPos.y - y
-                      const deltaY = prevPos.x - x
-                      style = {
-                        "--tile-offset-x": `${deltaX * 122}px`,
-                        "--tile-offset-y": `${deltaY * 122}px`,
-                      } as React.CSSProperties
-                    }
+              return (
+                <div
+                  className={
+                    "tile" +
+                    " tile-" +
+                    String(value) +
+                    (isNew ? " tile-new" : "")
                   }
-
-                  return (
-                    <td
-                      className={
-                        "tile" +
-                        " tile-" +
-                        String(value) +
-                        (isMoving ? " tile-moving" : "") +
-                        (isNew ? " tile-new" : "")
-                      }
-                      key={tile?.id ?? `empty-${x}-${y}`}
-                      data-tile-id={tile?.id}
-                      style={style}
-                    >
-                      {value}
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  key={tile?.id ?? `empty-${x}-${y}`}
+                  data-tile-id={tile?.id}
+                  data-row={x}
+                  data-col={y}
+                >
+                  {value}
+                </div>
+              )
+            }),
+          )}
+        </div>
         {gameOver && (
           <div className="game-over-overlay">
             <div className="game-over-text">Game Over</div>
