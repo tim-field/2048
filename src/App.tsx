@@ -209,25 +209,30 @@ function App(): React.JSX.Element {
 
   return (
     <div className="App">
-      <div className="scores-container">
-        <div className="score-box">
-          <div className="score-label">Score</div>
-          <div className="score-value">{currentScore}</div>
-          <div className="score-time">
-            Time: {Math.floor(currentTimeInSeconds / 60)}:
-            {String(currentTimeInSeconds % 60).padStart(2, "0")}
-          </div>
-        </div>
-        {highScore && (
+      <div className="header-container">
+        <div className="scores-container">
           <div className="score-box">
-            <div className="score-label">Best</div>
-            <div className="score-value">{highScore.highestTile}</div>
+            <div className="score-label">Score</div>
+            <div className="score-value">{currentScore}</div>
             <div className="score-time">
-              Time: {Math.floor(highScore.timeInSeconds / 60)}:
-              {String(highScore.timeInSeconds % 60).padStart(2, "0")}
+              Time: {Math.floor(currentTimeInSeconds / 60)}:
+              {String(currentTimeInSeconds % 60).padStart(2, "0")}
             </div>
           </div>
-        )}
+          {highScore && (
+            <div className="score-box">
+              <div className="score-label">Best</div>
+              <div className="score-value">{highScore.highestTile}</div>
+              <div className="score-time">
+                Time: {Math.floor(highScore.timeInSeconds / 60)}:
+                {String(highScore.timeInSeconds % 60).padStart(2, "0")}
+              </div>
+            </div>
+          )}
+        </div>
+        <button className="new-game-button" onClick={restartGame}>
+          New Game
+        </button>
       </div>
       <div className="Grid">
         <table className="board">
