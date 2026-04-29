@@ -239,7 +239,8 @@ function App(): React.JSX.Element {
                   const value = tile?.value ?? null
 
                   const tileId = tile?.id
-                  const isMoving = tileId !== undefined && movingTiles.has(tileId)
+                  const isMoving =
+                    tileId !== undefined && movingTiles.has(tileId)
                   const isNew = tileId !== undefined && newTiles.has(tileId)
 
                   // Calculate position offset for animation
